@@ -1,4 +1,4 @@
-import RegisterForm from '@/components/RegisterForm';
+import ValidateForm from '@/components/ValidateForm';
 
 export const metadata = {
   title: 'Registro',
@@ -7,7 +7,7 @@ export const metadata = {
 export default function RegisterPage() {
   return (
     <main className="min-h-dvh flex items-center justify-center p-6">
-      <RegisterForm />
+      <ValidateForm />
     </main>
   );
 }
