@@ -1,6 +1,6 @@
-'use client';
-
 import React, { useState } from 'react';
+import RegisterForm from './RegisterForm';
+import { renderToString } from 'react-dom/server';
 
 type PreEgresado = {
   nombre: string;
@@ -9,38 +9,45 @@ type PreEgresado = {
   fecha_egreso: number;
 }
 
-function validarEgresado() {
-  const nombre            = document.getElementById("nombre") as HTMLInputElement;
-  const apellido_paterno  = document.getElementById("apellido_paterno") as HTMLInputElement;
-  const apellido_materno  = document.getElementById("apellido_materno") as HTMLInputElement;
-  const fecha_egreso      = document.getElementById("fecha_egreso") as HTMLSelectElement;
-
-  fetch('/api/egresados/validacion', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      nombre: nombre.value,
-      apellido_paterno: apellido_paterno.value,
-      apellido_materno: apellido_materno.value,
-      fecha_egreso: parseInt(fecha_egreso.value),
-    })
-  }).then(res => res.json()).then(data => {
-    if (data.validacion) {
-      console.log('Egresado validado:', data.egresado);
-    } else {
-      console.log('Validación fallida:', data.message);
-    }
-  }).catch(err => {
-    console.error('Error en la solicitud:', err);
-  });
-
-  console.log(nombre.value, apellido_paterno.value, apellido_materno.value, fecha_egreso.value);
-}
-
 export default function ValidateForm() {
   const currentYear = new Date().getFullYear();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const validarEgresado = () => {
+    setLoading(true);
+    const nombre            = document.getElementById("nombre") as HTMLInputElement;
+    const apellido_paterno  = document.getElementById("apellido_paterno") as HTMLInputElement;
+    const apellido_materno  = document.getElementById("apellido_materno") as HTMLInputElement;
+    const fecha_egreso      = document.getElementById("fecha_egreso") as HTMLSelectElement;
+
+    fetch('/api/egresados/validacion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nombre: nombre.value,
+        apellido_paterno: apellido_paterno.value,
+        apellido_materno: apellido_materno.value,
+        fecha_egreso: parseInt(fecha_egreso.value),
+      })
+    }).then(res => res.json()).then(data => {
+      if (data.validacion) {
+        console.log('Egresado validado:', data.egresado);
+        document.querySelector('main')!.innerHTML = renderToString(<RegisterForm />);
+      } else {
+        setError(data.message || 'No se encontró un egresado con esos datos.');
+        console.log('Validación fallida:', data.message);
+      }
+      setLoading(false);
+    }).catch(err => {
+      setLoading(false);
+      setError('Error al validar el egresado. Por favor, inténtalo de nuevo más tarde.');
+      console.error('Error en la solicitud:', err);
+    });
+  }
+
   return (
     <form className='flex flex-col gap-2 w-full max-w-md border border-gray-300 shadow-2xl p-5 rounded-lg' onSubmit={(e) => {validarEgresado(); e.preventDefault();}}>
       <label className='text-2xl font-bold text-center my-4'>Registro</label>
@@ -59,7 +66,16 @@ export default function ValidateForm() {
           ))
         }
       </select>
-      <button type="submit" className='bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors'>Siguiente</button>
+      <label className='text-red-500'>{error}</label>
+      <button type="submit" className='bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors h-10 flex items-center justify-center gap-2'>
+        {loading && (
+          <svg className="w-5 h-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" ></path>
+          </svg>
+        )}
+        {loading ? "" : "Siguiente"}
+      </button>
     </form>
   );
 }
