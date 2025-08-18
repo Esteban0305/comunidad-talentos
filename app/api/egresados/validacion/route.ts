@@ -5,7 +5,6 @@ export async function POST(req: Request) {
   try {
     const {nombre, apellido_paterno, apellido_materno, fecha_egreso} = await req.json();
     const nombreCompleto = `${apellido_paterno} ${apellido_materno} ${nombre}`.toUpperCase();
-    console.log(`Nombre completo: ${nombreCompleto}, Fecha de egreso: ${fecha_egreso}`);
 
     const { data, error } = await supabaseServer.from('egresado_validacion').select('*').limit(10).ilikeAnyOf('nombre_completo', [nombreCompleto, nombreCompleto.replace(/\s+/g, '')]).eq('fecha_egreso', fecha_egreso);
 

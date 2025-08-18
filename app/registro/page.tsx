@@ -10,13 +10,13 @@ import React from 'react';
 // };
 
 export default function RegisterPage() {
-  const [currentForm, setCurrentForm] = React.useState<'validate' | 'register' | 'user'>('user');
+  const [currentForm, setCurrentForm] = React.useState<'validate' | 'register' | 'user'>('validate');
 
   return (
     <main className="min-h-dvh flex items-center">
       <div className="w-full m-auto max-w-md p-5">
-        {currentForm === 'validate' && <ValidateForm />}
-        {currentForm === 'register' && <RegisterForm />}
+        {currentForm === 'validate' && <ValidateForm validate={() => setCurrentForm('register')}/>}
+        {currentForm === 'register' && <RegisterForm register={() => setCurrentForm('user')}/>}
         {currentForm === 'user' && <UserForm />}
       </div>
     </main>

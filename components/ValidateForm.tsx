@@ -9,33 +9,35 @@ type PreEgresado = {
   fecha_egreso: number;
 }
 
-export default function ValidateForm() {
+export default function ValidateForm({validate}: {validate?: () => void}) {
   const currentYear = new Date().getFullYear();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const validarEgresado = () => {
+  const validarEgresado = (e: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
-    const nombre            = document.getElementById("nombre") as HTMLInputElement;
-    const apellido_paterno  = document.getElementById("apellido_paterno") as HTMLInputElement;
-    const apellido_materno  = document.getElementById("apellido_materno") as HTMLInputElement;
-    const fecha_egreso      = document.getElementById("fecha_egreso") as HTMLSelectElement;
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      nombre: formData.get('nombre')?.toString().trim() || '',
+      apellido_paterno: formData.get('apellido_paterno')?.toString().trim() || '',
+      apellido_materno: formData.get('apellido_materno')?.toString().trim() || '',
+      fecha_egreso: parseInt(formData.get('fecha_egreso')?.toString() || '-1'),
+    }
 
     fetch('/api/egresados/validacion', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        nombre: nombre.value,
-        apellido_paterno: apellido_paterno.value,
-        apellido_materno: apellido_materno.value,
-        fecha_egreso: parseInt(fecha_egreso.value),
-      })
+      body: JSON.stringify(data)
     }).then(res => res.json()).then(data => {
       if (data.validacion) {
-        console.log('Egresado validado:', data.egresado);
-        document.querySelector('main')!.innerHTML = renderToString(<RegisterForm />);
+        localStorage.setItem('nombre', data.nombre);
+        localStorage.setItem('apellido_paterno', data.apellido_paterno);
+        localStorage.setItem('apellido_materno', data.apellido_materno);
+        localStorage.setItem('fecha_egreso', data.fecha_egreso);
+        validate!();
       } else {
         setError(data.message || 'No se encontró un egresado con esos datos.');
         console.log('Validación fallida:', data.message);
@@ -49,7 +51,7 @@ export default function ValidateForm() {
   }
 
   return (
-    <form className='flex flex-col gap-2 w-full max-w-md border border-gray-300 shadow-2xl p-5 rounded-lg' onSubmit={(e) => {validarEgresado(); e.preventDefault();}}>
+    <form className='flex flex-col gap-2 w-full max-w-md border border-gray-300 shadow-2xl p-5 rounded-lg' onSubmit={(e) => {validarEgresado(e); e.preventDefault();}}>
       <label className='text-2xl font-bold text-center my-4'>Registro</label>
       <label htmlFor="nombre">Nombres</label>
       <input className='p-2 border border-gray-300 rounded mb-3' type="text" name="nombre" id="nombre" placeholder="Juan" required/>
