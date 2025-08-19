@@ -53,7 +53,7 @@ export default function UserForm() {
         sexo : sexo,
         bio : bio,
         correo : correo,
-        contraseña : contraseña,
+        contrasena : contraseña,
       })
     }).then(res => res.json()).then(data => {
       if (data.message) {
@@ -67,7 +67,7 @@ export default function UserForm() {
     }).catch(err => {
       setError('Error al registrar el egresado. Por favor, inténtalo de nuevo más tarde.');
       console.error('Error en la solicitud:', err);
-      localStorage.clear();
+      // localStorage.clear();
     });
     setLoading(false);
   }

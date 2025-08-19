@@ -25,22 +25,24 @@ export default function ValidateForm({validate}: {validate?: () => void}) {
       fecha_egreso: parseInt(formData.get('fecha_egreso')?.toString() || '-1'),
     }
 
+    console.log(data.nombre)
+
     fetch('/api/egresados/validacion', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data)
-    }).then(res => res.json()).then(data => {
-      if (data.validacion) {
+    }).then(res => res.json()).then(dataR => {
+      if (dataR.validacion) {
         localStorage.setItem('nombre', data.nombre);
         localStorage.setItem('apellido_paterno', data.apellido_paterno);
         localStorage.setItem('apellido_materno', data.apellido_materno);
-        localStorage.setItem('fecha_egreso', data.fecha_egreso);
+        localStorage.setItem('fecha_egreso', data.fecha_egreso.toString());
         validate!();
       } else {
-        setError(data.message || 'No se encontró un egresado con esos datos.');
-        console.log('Validación fallida:', data.message);
+        setError(dataR.message || 'No se encontró un egresado con esos datos.');
+        console.log('Validación fallida:', dataR.message);
       }
       setLoading(false);
     }).catch(err => {
