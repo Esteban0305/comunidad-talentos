@@ -1,6 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import bcrypt from "bcryptjs";
-import { registrarUsuario } from "./usuario";
+import { registrarUsuarioSupabase } from "./usuario";
 
 export async function buscarEgresadoValidacion({
   nombre,
@@ -51,30 +51,32 @@ export async function registrarEgresado({
     throw new Error('La contraseña debe tener al menos 6 caracteres');
   }
 
-  const usuario = await registrarUsuario({ correo, contrasena });
+  const usuario = await registrarUsuarioSupabase(correo, contrasena);
   
   if (!usuario) {
     throw new Error('Error al registrar el usuario');
   }
 
-  const egresado = {
-    id_usuario: usuario[0].id_usuario,
-    nombre: nombre.toUpperCase(),
-    apellido_p: apellido_paterno.toUpperCase(),
-    apellido_m: apellido_materno.toUpperCase(),
-    fecha_egreso,
-    curp: curp.toUpperCase(),
-    sexo,
-    bio: bio || null,
-  }
+  console.log(usuario);
 
-  const { data, error } = await supabaseServer
-    .from('egresados')
-    .insert(egresado).select();
+  // const egresado = {
+  //   id_usuario: usuario.id_usuario,
+  //   nombre: nombre.toUpperCase(),
+  //   apellido_p: apellido_paterno.toUpperCase(),
+  //   apellido_m: apellido_materno.toUpperCase(),
+  //   fecha_egreso,
+  //   curp: curp.toUpperCase(),
+  //   sexo,
+  //   bio: bio || null,
+  // }
 
-  if (error) {
-    throw error;
-  }
+  // const { data, error } = await supabaseServer
+  //   .from('egresados')
+  //   .insert(egresado).select();
 
-  return data;
+  // if (error) {
+  //   throw error;
+  // }
+
+  // return data;
 }
