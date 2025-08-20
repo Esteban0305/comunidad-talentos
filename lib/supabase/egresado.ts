@@ -1,6 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import bcrypt from "bcryptjs";
-import { registrarUsuarioSupabase } from "./usuario";
+import { iniciarSesionUsuarioSupabase, registrarUsuarioSupabase } from "./usuario";
 
 export async function buscarEgresadoValidacion({
   nombre,
@@ -57,26 +57,26 @@ export async function registrarEgresado({
     throw new Error('Error al registrar el usuario');
   }
 
-  console.log(usuario);
+  const egresado = {
+    id_usuario: usuario.user!.id,
+    nombre: nombre.toUpperCase(),
+    apellido_p: apellido_paterno.toUpperCase(),
+    apellido_m: apellido_materno.toUpperCase(),
+    fecha_egreso,
+    curp: curp.toUpperCase(),
+    sexo,
+    bio: bio || null,
+  }
 
-  // const egresado = {
-  //   id_usuario: usuario.id_usuario,
-  //   nombre: nombre.toUpperCase(),
-  //   apellido_p: apellido_paterno.toUpperCase(),
-  //   apellido_m: apellido_materno.toUpperCase(),
-  //   fecha_egreso,
-  //   curp: curp.toUpperCase(),
-  //   sexo,
-  //   bio: bio || null,
-  // }
+  const { data, error } = await supabaseServer
+    .from('egresados')
+    .insert(egresado).select();
 
-  // const { data, error } = await supabaseServer
-  //   .from('egresados')
-  //   .insert(egresado).select();
+  if (error) {
+    throw error;
+  }
 
-  // if (error) {
-  //   throw error;
-  // }
+  iniciarSesionUsuarioSupabase(correo, contrasena);
 
-  // return data;
+  return data;
 }
