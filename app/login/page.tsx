@@ -2,7 +2,7 @@
 
 import React, { use, useEffect, useState } from 'react';
 import { supabaseServer } from '@/lib/supabase/server';
-import { iniciarSesionToken, iniciarSesionUsuarioSupabase } from '@/lib/supabase/usuario';
+import { iniciarSesionToken, iniciarSesionUsuarioSupabase, obtenerSesion } from '@/lib/supabase/usuario';
 import { useRouter } from 'next/navigation';
 
 export default  function RegisterPage() {
@@ -24,12 +24,19 @@ export default  function RegisterPage() {
         console.error('Error al iniciar sesión:', err);
       });
     } else {
-      supabaseServer.auth.getUser().then(({ data: { user } }) => {
-        if (user) {
-          console.log('Usuario actual:', user);
-          router.push('/dashboard');
+      obtenerSesion().then((data) => {
+        if (data) {
+          const role = data.data.role;
+          switch (role) {
+            case 'egresado':
+              router.push('/dashboard/egresado');
+              break;
+            case 'empresa':
+              router.push('/dashboard/empresa');
+              break;
+          }
         } else {
-          console.log('No hay usuario activo');
+          console.log('No hay sesión activa');
         }
       });
     }
