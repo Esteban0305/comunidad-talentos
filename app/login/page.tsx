@@ -19,7 +19,7 @@ export default  function RegisterPage() {
       setLoading(true);
       iniciarSesionToken(access_token, refresh_token).then((data) => {
         console.log('Sesión iniciada con éxito', data);
-        // router.push('/dashboard');
+        router.push('/dashboard');
       }).catch((err) => {
         console.error('Error al iniciar sesión:', err);
       });
@@ -27,17 +27,11 @@ export default  function RegisterPage() {
       supabaseServer.auth.getUser().then(({ data: { user } }) => {
         if (user) {
           console.log('Usuario actual:', user);
+          router.push('/dashboard');
         } else {
           console.log('No hay usuario activo');
         }
       });
-      // supabaseServer.auth.getSession().then(({ data: { session } }) => {
-      //   if (session) {
-      //     console.log('Sesión actual:', session);
-      //   } else {
-      //     console.log('No hay sesión activa');
-      //   }
-      // });
     }
   }, [router]);
 
