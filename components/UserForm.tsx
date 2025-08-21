@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function UserForm() {
+export default function UserForm(validateEmail: {validateEmail?: () => void}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -36,6 +36,8 @@ export default function UserForm() {
     const sexo  = localStorage.getItem('sexo');
     const bio   = localStorage.getItem('bio');
 
+    localStorage.setItem('correo', data.correo);
+
     const correo      = data.correo;
     const contraseña  = data.contraseña;
 
@@ -58,16 +60,16 @@ export default function UserForm() {
     }).then(res => res.json()).then(data => {
       if (data.message) {
         console.log('Egresado registrado:', data);
-        alert('Registro exitoso. ¡Bienvenido!');
-        // localStorage.clear();
+        localStorage.clear();
+        validateEmail.validateEmail!();
       } else {
         setError(data.error || 'Error al registrar el egresado. Por favor, inténtalo de nuevo más tarde.');
         console.error('Error en el registro:', data);
       }
+      setLoading(false);
     }).catch(err => {
       setError('Error al registrar el egresado. Por favor, inténtalo de nuevo más tarde.');
       console.error('Error en la solicitud:', err);
-      // localStorage.clear();
     });
     setLoading(false);
   }
@@ -87,7 +89,7 @@ export default function UserForm() {
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" ></path>
           </svg>
         )}
-        {loading ? "" : "Siguiente"}
+        {loading ? "" : "Registrarme"}
       </button>
     </form>
   );

@@ -76,7 +76,5 @@ export async function registrarEgresado({
     throw error;
   }
 
-  iniciarSesionUsuarioSupabase(correo, contrasena);
-
   return data;
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import EmailVerificationForm from '@/components/EmailVer';
 import RegisterForm from '@/components/RegisterForm';
 import UserForm from '@/components/UserForm';
 import ValidateForm from '@/components/ValidateForm';
@@ -10,14 +11,15 @@ import React from 'react';
 // };
 
 export default function RegisterPage() {
-  const [currentForm, setCurrentForm] = React.useState<'validate' | 'register' | 'user'>('validate');
+  const [currentForm, setCurrentForm] = React.useState<'validate' | 'register' | 'user' | 'emailVerification'>('validate');
 
   return (
     <main className="min-h-dvh flex items-center">
       <div className="w-full m-auto max-w-md p-5">
         {currentForm === 'validate' && <ValidateForm validate={() => setCurrentForm('register')}/>}
         {currentForm === 'register' && <RegisterForm register={() => setCurrentForm('user')}/>}
-        {currentForm === 'user' && <UserForm />}
+        {currentForm === 'user' && <UserForm validateEmail={() => setCurrentForm('emailVerification')}/>}
+        {currentForm === 'emailVerification' && <EmailVerificationForm />}
       </div>
     </main>
   );
