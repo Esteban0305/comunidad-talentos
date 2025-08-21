@@ -25,3 +25,12 @@ export async function iniciarSesionUsuarioSupabase(correo: string, contrasena: s
   if (error) throw new Error(error.message);
   return data;
 }
+
+export async function iniciarSesionToken(access_token: string, refresh_token: string) {
+  const { data, error } = await supabaseServer.auth.setSession({
+    access_token,
+    refresh_token
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
