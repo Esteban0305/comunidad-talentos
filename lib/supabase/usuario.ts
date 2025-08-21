@@ -6,13 +6,8 @@ export async function registrarUsuarioSupabase(correo: string, contrasena: strin
     email: correo,
     password: contrasena
   });
-  if (error) throw new Error(error.message);
 
-  // if (data.user) {
-  //   await supabaseServer
-  //     .from('usuarios')
-  //     .insert({ id_usuario: data.user.id, telefono });
-  // }
+  if (error) throw new Error(error.message);
 
   return data;
 }
@@ -31,6 +26,15 @@ export async function iniciarSesionToken(access_token: string, refresh_token: st
     access_token,
     refresh_token
   });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function registrarRol(id_usuario: string, role: string) {
+  const { data, error } = await supabaseServer
+    .from('usuarios')
+    .insert({ id_usuario: id_usuario, role: role }).select();
+
   if (error) throw new Error(error.message);
   return data;
 }

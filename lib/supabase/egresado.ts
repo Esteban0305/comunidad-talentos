@@ -1,6 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import bcrypt from "bcryptjs";
-import { iniciarSesionUsuarioSupabase, registrarUsuarioSupabase } from "./usuario";
+import { iniciarSesionUsuarioSupabase, registrarRol, registrarUsuarioSupabase } from "./usuario";
 
 export async function buscarEgresadoValidacion({
   nombre,
@@ -66,6 +66,12 @@ export async function registrarEgresado({
     curp: curp.toUpperCase(),
     sexo,
     bio: bio || null,
+  }
+
+  const role = await registrarRol(usuario.user!.id, 'egresado');
+
+  if (!role) {
+    throw new Error('Error al registrar el rol');
   }
 
   const { data, error } = await supabaseServer
