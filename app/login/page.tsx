@@ -7,45 +7,48 @@ import { useRouter } from 'next/navigation';
 export default  function RegisterPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const params = new URLSearchParams(window.location.hash.replace('#', ''));
-
-  const access_token = searchParams.access_token as string | undefined;
-  const refresh_token = searchParams.refresh_token as string | undefined;
-  
-  // const access_token = params.get('access_token');
-  // const refresh_token = params.get('refresh_token');
+  // const access_token = searchParams.access_token as string | undefined;
+  // const refresh_token = searchParams.refresh_token as string | undefined;
 
   useEffect(() => {
-    if (access_token && refresh_token) {
-      setLoading(true);
-      iniciarSesionToken(access_token, refresh_token).then((data) => {
-        router.push('/dashboard');
-      }).catch((err) => {
-        console.error('Error al iniciar sesión:', err);
-      });
-    } else {
-      obtenerSesion().then((data) => {
-        if (data) {
-          const role = data.data.role;
-          switch (role) {
-            case 'egresado':
-              router.push('/dashboard/egresado');
-              break;
-            case 'empresa':
-              router.push('/dashboard/empresa');
-              break;
+    async function fetchTokens() {
+      const params = await searchParams;
+      const access_token = params!.access_token as string | undefined;
+      const refresh_token = params!.refresh_token as string | undefined;
+
+      if (access_token && refresh_token) {
+        setLoading(true);
+        iniciarSesionToken(access_token, refresh_token).then((data) => {
+          router.push('/dashboard');
+        }).catch((err) => {
+          console.error('Error al iniciar sesión:', err);
+        });
+      } else {
+        obtenerSesion().then((data) => {
+          if (data) {
+            const role = data.data.role;
+            switch (role) {
+              case 'egresado':
+                router.push('/dashboard/egresado');
+                break;
+              case 'empresa':
+                router.push('/dashboard/empresa');
+                break;
+            }
+          } else {
+            console.log('No hay sesión activa');
           }
-        } else {
-          console.log('No hay sesión activa');
-        }
-      });
+        });
+      }
     }
+
+    fetchTokens();
   }, [router]);
 
   const iniciarSesion = async (e: React.FormEvent<HTMLFormElement>) => {
