@@ -1,7 +1,6 @@
 'use client';
 
-import React, { use, useEffect, useState } from 'react';
-import { supabaseServer } from '@/lib/supabase/server';
+import React, { useEffect, useState } from 'react';
 import { iniciarSesionToken, iniciarSesionUsuarioSupabase, obtenerSesion } from '@/lib/supabase/usuario';
 import { useRouter } from 'next/navigation';
 
@@ -18,7 +17,6 @@ export default  function RegisterPage() {
     if (access_token && refresh_token) {
       setLoading(true);
       iniciarSesionToken(access_token, refresh_token).then((data) => {
-        console.log('Sesión iniciada con éxito', data);
         router.push('/dashboard');
       }).catch((err) => {
         console.error('Error al iniciar sesión:', err);

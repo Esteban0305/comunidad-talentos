@@ -84,3 +84,17 @@ export async function registrarEgresado({
 
   return data;
 }
+
+export async function obtenerEgresado(id_usuario: string) {
+  const { data, error } = await supabaseServer
+    .from('egresados')
+    .select('*')
+    .eq('id_usuario', id_usuario)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
