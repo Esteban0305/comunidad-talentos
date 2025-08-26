@@ -4,14 +4,22 @@ import React, { useEffect, useState } from 'react';
 import { iniciarSesionToken, iniciarSesionUsuarioSupabase, obtenerSesion } from '@/lib/supabase/usuario';
 import { useRouter } from 'next/navigation';
 
-export default  function RegisterPage() {
+export default  function RegisterPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const params = new URLSearchParams(window.location.hash.replace('#', ''));
-  const access_token = params.get('access_token');
-  const refresh_token = params.get('refresh_token');
+
+  const access_token = searchParams.access_token as string | undefined;
+  const refresh_token = searchParams.refresh_token as string | undefined;
+  
+  // const access_token = params.get('access_token');
+  // const refresh_token = params.get('refresh_token');
 
   useEffect(() => {
     if (access_token && refresh_token) {
