@@ -1,6 +1,5 @@
 import { supabaseServer } from "@/lib/supabase/server";
-import bcrypt from "bcryptjs";
-import { iniciarSesionUsuarioSupabase, registrarRol, registrarUsuarioSupabase } from "./usuario";
+import { registrarRol, registrarUsuarioSupabase } from "./usuario";
 
 export async function buscarEgresadoValidacion({
   nombre,
