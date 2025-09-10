@@ -62,7 +62,23 @@ export default  function RegisterPage({
 
     const {user, session} = await iniciarSesionUsuarioSupabase(correo, contrasena);
 
-    console.log('Usuario autenticado:', user);
+    obtenerSesion()
+      .then((data) => {
+        if (data) {
+          const role = data.data.role;
+          switch (role) {
+            case 'egresado':
+              router.push('/dashboard/egresado');
+              break;
+            case 'empresa':
+              router.push('/dashboard/empresa');
+              break;
+          }
+        } else {
+          console.log('No hay sesión activa');
+        }
+      });
+    setLoading(false);
   }
 
   return (
