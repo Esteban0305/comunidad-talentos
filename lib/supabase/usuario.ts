@@ -4,7 +4,10 @@ import { supabaseServer } from './server';
 export async function registrarUsuarioSupabase(correo: string, contrasena: string) {
   const { data, error } = await supabaseServer.auth.signUp({
     email: correo,
-    password: contrasena
+    password: contrasena,
+    options: {
+      emailRedirectTo: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000/login',
+    },
   });
 
   if (error) throw new Error(error.message);
