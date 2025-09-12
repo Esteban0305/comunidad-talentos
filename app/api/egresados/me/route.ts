@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { buscarEgresadoValidacion } from "@/lib/supabase/egresado";
 import { obtenerSesion } from "@/lib/supabase/usuario";
 
 export async function GET() {

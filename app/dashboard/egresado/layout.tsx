@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Header from "../../../components/dashboard/egresados/Header";
 import Footer from "@/components/dashboard/egresados/Footer";
 

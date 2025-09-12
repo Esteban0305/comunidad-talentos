@@ -1,12 +1,11 @@
 'use client';
 
-import HeaderDashboard from "@/components/HeaderDashboard";
 import Loading from "@/components/Loading";
 import { ListadoFormularios, Formulario } from "@/components/dashboard/egresados/ListadoFormularios";
 import { obtenerEgresado } from "@/lib/supabase/egresado";
 import { getAllFormularios } from "@/lib/supabase/formulario";
 import { obtenerSesion } from "@/lib/supabase/usuario";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function EgresadoDashboard() {
   const [nombre, setNombre] = useState("prueba");

@@ -16,11 +16,8 @@ import { Elemento } from "@/models/Elemento";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
-export default function Formulario({
-  params,
-}: {
-  params: { id_formulario: string }
-}) {
+export default function Formulario({ params }: { params: Promise<{ id_formulario: string }> }) {
+  // params: { id_formulario: string }
   const router = useRouter();
   const [formulario, setFormulario] = React.useState<{titulo: string, descripcion: string, id_formulario: number} | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -102,10 +99,8 @@ export default function Formulario({
         router.replace('/login');
       });
     }
-    validarEgresado();
-  }, [params, router]);
 
-  const fetchFormulario = async () => {
+    const fetchFormulario = async () => {
       const { id_formulario } = await params;
       getFormularioByID(parseInt(id_formulario)).then(async (formularioF) => {
         if (!formularioF) {
@@ -121,6 +116,8 @@ export default function Formulario({
         router.replace('/not-found');
       });
     }
+    validarEgresado();
+  }, [params, router]);
 
   const fetchElementos = async (id_formulario : number) => {
     getAllElementosByFormularioID(id_formulario).then((elementosF) => {

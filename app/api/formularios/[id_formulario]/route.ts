@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 
-export async function POST(req: Request, {params}: {params: {id_formulario: string}}) {
+export async function POST(req: Request, { params }: { params: Promise<{ id_formulario: string }> }) {
   try {
     const { id_formulario } = await params;
     const { id_egresado, respuestas } = await req.json();
@@ -24,6 +24,7 @@ export async function POST(req: Request, {params}: {params: {id_formulario: stri
     if (data) {
       const id_instancia = data.id_instancia;
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const respuestasConInstancia = respuestas.map((respuesta: any) => ({
         ...respuesta,
         respuesta: JSON.stringify(respuesta.respuesta),

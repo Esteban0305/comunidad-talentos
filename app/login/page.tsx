@@ -24,7 +24,7 @@ export default  function RegisterPage({
 
       if (access_token && refresh_token) {
         setLoading(true);
-        iniciarSesionToken(access_token, refresh_token).then((data) => {
+        iniciarSesionToken(access_token, refresh_token).then(() => {
           router.push('/dashboard');
         }).catch((err) => {
           console.error('Error al iniciar sesión:', err);
@@ -49,7 +49,7 @@ export default  function RegisterPage({
     }
 
     fetchTokens();
-  }, [router]);
+  }, [router, searchParams]);
 
   const iniciarSesion = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,7 +60,7 @@ export default  function RegisterPage({
     const correo = formData.get("correo") as string;
     const contrasena = formData.get("contraseña") as string;
 
-    const {user, session} = await iniciarSesionUsuarioSupabase(correo, contrasena);
+    await iniciarSesionUsuarioSupabase(correo, contrasena);
 
     obtenerSesion()
       .then((data) => {
