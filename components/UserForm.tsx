@@ -80,7 +80,8 @@ export default function UserForm(validateEmail: {validateEmail?: () => void}) {
       <label htmlFor="correo">Correo</label>
       <input className='p-2 border border-gray-300 rounded mb-3' type="email" name="correo" id="correo" placeholder="juan_perez@email.com" required/>
       <label htmlFor="contraseña">Contraseña</label>
-      <input className='p-2 border border-gray-300 rounded mb-3' type="password" name="contraseña" id="contraseña" placeholder="********" required/>
+      <input className='p-2 border border-gray-300 rounded' type="password" name="contraseña" id="contraseña" placeholder="********" required/>
+      <small>Tu contraseña debe incluir al menos una mayúscula, minúsula, número y caracter extraño</small>
       <label className='text-red-500'>{error}</label>
       <button type="submit" className='bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors h-10 flex items-center justify-center gap-2'>
         {loading && (

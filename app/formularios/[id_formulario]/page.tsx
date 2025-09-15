@@ -2,6 +2,7 @@
 
 import Abierta from "@/components/formularios/Abierta";
 import BooleanElement from "@/components/formularios/Boolean";
+import { Condicionante } from "@/components/formularios/Condicionante";
 import { Diccionario } from "@/components/formularios/Diccionario";
 import Fin from "@/components/formularios/Fin";
 import Numerica from "@/components/formularios/Numerica";
@@ -74,10 +75,15 @@ export default function Formulario({ params }: { params: Promise<{ id_formulario
   const regresarElementoAnterior = () => {
     if (nodoActual && nodoActual.anterior) {
       nodoActual.anterior.siguiente = nodoActual;
-      setElementoActual(nodoActual.anterior.elemento);
       setNodoActual(nodoActual.anterior);
       setNextDisabled(false);
       console.log(nodoActual);
+
+      if (nodoActual.elemento.tipo === "Condicionante") {
+        regresarElementoAnterior();
+      } else {
+        setElementoActual(nodoActual.anterior.elemento);
+      }
     }
   };
 
@@ -121,6 +127,7 @@ export default function Formulario({ params }: { params: Promise<{ id_formulario
 
   const fetchElementos = async (id_formulario : number) => {
     getAllElementosByFormularioID(id_formulario).then((elementosF) => {
+      console.log(elementosF);
       setPrimerElemento(elementosF.length > 0 ? elementosF[0].id_elemento : null);
       elementosF.forEach((el: Elemento) => {
         setElementos(prev => new Map(prev).set(el.id_elemento, el));
@@ -138,12 +145,17 @@ export default function Formulario({ params }: { params: Promise<{ id_formulario
 
   const handleRespuesta = (respuesta: number | string | boolean | number[]) => {
     setNextDisabled(false);
+    console.log("Respuesta recibida:", respuesta);
     if (nodoActual) {
       const nuevoNodo = {
         ...nodoActual,
         respuesta,
       };
       setNodoActual(nuevoNodo);
+
+      if (nodoActual.elemento.tipo === "Condicionante") {
+        handleNext();
+      }
     }
   };
 
@@ -161,8 +173,19 @@ export default function Formulario({ params }: { params: Promise<{ id_formulario
       let siguienteId: number | undefined;
       if (elementoActual.flujo.cases && Array.isArray(elementoActual.flujo.cases)) {
         const caseMatch = elementoActual.flujo.cases.find(
-          (c: { value: boolean | number | string; id_elemento: number; id_siguiente: number }) => c.value === nodoActual?.respuesta
+          (c: { value: boolean | number | string; id_elemento: number; id_siguiente: number }) => {
+            // Busca el nodo cuya id_elemento coincida con el case.id_elemento
+            let nodo = nodoActual;
+            while (nodo) {
+              if (nodo.elemento.id_elemento === c.id_elemento) {
+                return nodo.respuesta === c.value;
+              }
+              nodo = nodo.anterior;
+            }
+            return false;
+          }
         );
+        console.log(caseMatch);
         siguienteId = caseMatch ? caseMatch.id_siguiente : elementoActual.flujo.default;
       } else {
         siguienteId = elementoActual.flujo.default;
@@ -267,6 +290,8 @@ export default function Formulario({ params }: { params: Promise<{ id_formulario
                   return <Pausa contenido={elementoActual.contenido} />;
                   case "Texto":
                   return <p className="text-gray-600">{elementoActual.contenido}</p>;
+                  case "Condicionante":
+                  return <Condicionante contenido={elementoActual.contenido} callback={handleRespuesta} respuesta={nodoActual?.elemento.tipo == 'Condicionante' ? nodoActual.respuesta as boolean | null : null} condicion={false} />;
                   default:
                   return <p>Tipo de elemento no soportado aún: {elementoActual?.tipo}</p>;
                 }

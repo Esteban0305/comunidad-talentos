@@ -36,3 +36,16 @@ export async function getAllFormularios() {
 
   return data;
 }
+
+export async function getAllInstanciasByEgresadoID( id_egresado : number ) {
+  const {data, error} = await supabaseServer
+  .from('instancias')
+  .select('*')
+  .eq('id_egresado', id_egresado);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}

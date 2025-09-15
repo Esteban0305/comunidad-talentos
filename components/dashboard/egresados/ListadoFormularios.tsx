@@ -5,7 +5,7 @@ export interface Formulario {
   titulo: string;
   descripcion: string;
 }
-export function ListadoFormularios({formularios}: {formularios: Formulario[]}) {
+export function ListadoFormularios({formularios, contestados}: {formularios: Formulario[], contestados?: boolean}) {
   return (
     <div className="flex flex-col gap-6 max-w-lg mx-auto">
       {formularios.map((formulario) => (
@@ -15,12 +15,17 @@ export function ListadoFormularios({formularios}: {formularios: Formulario[]}) {
       >
         <h3 className="text-xl font-bold mb-2 text-blue-700">{formulario.titulo}</h3>
         <p className="text-gray-700 mb-4">{formulario.descripcion}</p>
-        <Link
-          href={`/formularios/${formulario.id_formulario}`}
-          className="mt-auto inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded transition w-fit"
-        >
-          Ir al formulario
-        </Link>
+        {contestados && (
+          <span className="text-sm text-gray-500">Contestado</span>
+        )}
+
+        {!contestados && (
+          <Link href={`/formularios/${formulario.id_formulario}`}
+            className="mt-auto inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded transition w-fit"
+          >
+            Ir al formulario
+          </Link>
+        )}
       </div>
       ))}
     </div>

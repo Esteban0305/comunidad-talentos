@@ -32,6 +32,7 @@ export default  function RegisterPage({
       } else {
         obtenerSesion().then((data) => {
           if (data) {
+            setLoading(true);
             const role = data.data.role;
             switch (role) {
               case 'egresado':

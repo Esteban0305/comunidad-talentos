@@ -43,6 +43,7 @@ export function Diccionario({
         className="border border-gray-300 rounded p-2"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onFocus={() => setQuery(query === "" ? " " : query)}
         placeholder="Buscar..."
       />
       {query.length > 0 && (
