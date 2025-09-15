@@ -3,19 +3,34 @@
 import Loading from "@/components/Loading";
 import { ListadoFormularios, Formulario } from "@/components/dashboard/egresados/ListadoFormularios";
 import { obtenerEgresado } from "@/lib/supabase/egresado";
-import { getAllFormularios } from "@/lib/supabase/formulario";
+import { getAllFormularios, getAllInstanciasByEgresadoID } from "@/lib/supabase/formulario";
 import { obtenerSesion } from "@/lib/supabase/usuario";
+import { Egresado } from "@/models/Egresado";
 import { useEffect, useState } from "react";
 
 export default function EgresadoDashboard() {
   const [nombre, setNombre] = useState("prueba");
   const [formularios, setFormularios] = useState<Formulario[]>([]);
+  const [formulariosContestados, setFormulariosContestados] = useState<Formulario[]>([]);
   const [loading, setLoading] = useState(true);
+  const [egresado, setEgresado] = useState<Egresado | null>(null);
 
-  const fetchFormularios = async () => {
+  const fetchFormularios = async (id_egresado: number) => {
     getAllFormularios().then((formularios) => {
-      setFormularios(formularios);
-      console.log(formularios);
+      getAllInstanciasByEgresadoID(id_egresado).then((instancias) => {
+        console.log('Instancias:', instancias);
+        // Filtrar los formularios que no están en las instancias
+        const formulariosContestados = formularios.filter(formulario => 
+          instancias.some(instancia => instancia.id_formulario === formulario.id_formulario)
+        );
+
+        const formulariosNoContestados = formularios.filter(formulario => 
+          !instancias.some(instancia => instancia.id_formulario === formulario.id_formulario)
+        );
+        setFormulariosContestados(formulariosContestados)
+        setFormularios(formulariosNoContestados);
+        console.log(formulariosNoContestados);
+      });
     });
   }
 
@@ -26,8 +41,9 @@ export default function EgresadoDashboard() {
         console.log(user);
         obtenerEgresado(user.id).then(async (egresado) => {
           setNombre(egresado.nombre + " " + egresado.apellido_p + " " + egresado.apellido_m);
-          console.log(egresado);
-          await fetchFormularios();
+          setEgresado({...egresado, correo: user.email!});
+          console.log("Egresado", data);
+          await fetchFormularios(egresado.id_egresado);
           setLoading(false);
         });
       }
@@ -45,17 +61,20 @@ export default function EgresadoDashboard() {
         <label className="block font-bold mb-1">Nombre:</label>
         <p className="mb-2">{nombre}</p>
         <label className="block font-bold mb-1">Generación:</label>
-        <p className="mb-2">2016 - 2019</p>
+        <p className="mb-2">{(egresado!.fecha_egreso - 3) + " - " + egresado?.fecha_egreso}</p>
         <label className="block font-bold mb-1">Correo:</label>
-        <p className="mb-2">emunoz4@ucol.mx</p>
-        <label className="block font-bold mb-1">Fecha de registro:</label>
-        <p className="mb-2">15/03/2020</p>
+        <p className="mb-2">{egresado?.correo}</p>
+        {/* <label className="block font-bold mb-1">Fecha de registro:</label>
+        <p className="mb-2">{egresado?.created_at}</p> */}
       </div>
 
       <section className="mt-8 max-w-md mx-auto">
         <h2 className="text-xl font-semibold mb-4">Formularios disponibles</h2>
         {/* Aquí iría el listado de formularios */}
         <ListadoFormularios formularios={formularios} />
+        <h2 className="text-xl font-semibold mb-4 mt-4">Formularios contestados</h2>
+        {/* Aquí iría el listado de formularios */}
+        <ListadoFormularios formularios={formulariosContestados} contestados={true} />
       </section>
       </>
       : null}
