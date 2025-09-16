@@ -20,9 +20,9 @@ export function Diccionario({
     query.length > 0
       ? opciones
           .filter((opt) =>
-            opt.contenido.toLowerCase().includes(query.toLowerCase())
+            opt.contenido.toLowerCase().includes(query.toLowerCase().trim())
           )
-          .slice(0, 7)
+          .slice(0, 15)
       : [];
 
   useEffect(() => {
