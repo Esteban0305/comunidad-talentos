@@ -12,12 +12,31 @@ export async function buscarEgresadoValidacion({
   apellido_materno: string;
   fecha_egreso: string;
 }) {
-  const nombreCompleto = `${apellido_paterno} ${apellido_materno} ${nombre}`.toUpperCase();
+  // Función para quitar acentos
+  function quitarAcentos(texto: string) {
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  const nombreCompleto = quitarAcentos(
+    `${apellido_paterno} ${apellido_materno} ${nombre}`.toUpperCase()
+  );
+  // Buscar tanto con acentos como sin acentos y sin espacios
+  const nombreCompletoSinEspacios = nombreCompleto.replace(/\s+/g, "");
+  const nombreCompletoConAcentos = `${apellido_paterno} ${apellido_materno} ${nombre}`.toUpperCase();
+  const nombreCompletoConAcentosSinEspacios = nombreCompletoConAcentos.replace(/\s+/g, "");
+
   return await supabaseServer
     .from('egresado_validacion')
     .select('*')
     .limit(10)
-    .ilikeAnyOf('nombre_completo', [nombreCompleto, nombreCompleto.replace(/\s+/g, '')])
+    .or(
+      [
+        `nombre_completo.ilike.${nombreCompleto}`,
+        `nombre_completo.ilike.${nombreCompletoSinEspacios}`,
+        `nombre_completo.ilike.${nombreCompletoConAcentos}`,
+        `nombre_completo.ilike.${nombreCompletoConAcentosSinEspacios}`
+      ].join(',')
+    )
     .eq('fecha_egreso', fecha_egreso);
 }
 
